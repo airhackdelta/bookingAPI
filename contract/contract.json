@@ -28,14 +28,14 @@
           "200" : {
             "description" : "bookings",
             "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/BookingOffer"
-              }
+              "$ref" : "#/definitions/BookingOfferResponse"
             }
           },
           "400" : {
             "description" : "Invalid input"
+          },
+          "404" : {
+            "description" : "Not found"
           },
           "500" : {
             "description" : "Backend error"
@@ -88,14 +88,14 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/BookingOffer"
-              }
+              "$ref" : "#/definitions/BookingOfferResponse"
             }
           },
           "400" : {
             "description" : "Invalid request"
+          },
+          "404" : {
+            "description" : "Not found"
           },
           "500" : {
             "description" : "Backend error"
@@ -128,6 +128,9 @@
           "400" : {
             "description" : "Invalid input"
           },
+          "404" : {
+            "description" : "Not found"
+          },
           "500" : {
             "description" : "Backend error"
           }
@@ -156,12 +159,23 @@
           "description" : "MMddyyyy"
         },
         "returnDate" : {
-          "type": "string",
+          "type" : "string",
           "description" : "MMddyyyy"
         },
         "sourceType" : {
           "type" : "string",
           "description" : "test (for canned response), facebook, linkedin, etc"
+        }
+      }
+    },
+    "BookingOfferResponse" : {
+      "type" : "object",
+      "properties" : {
+        "bookingOffers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/BookingOffer"
+          }
         }
       }
     },
@@ -182,8 +196,13 @@
           "type" : "string",
           "description" : "HH:mm"
         },
-        "flightNumber" : {
-          "type" : "string"
+        "returnDate" : {
+          "type" : "string",
+          "description" : "MMddyyyy"
+        },
+        "returnTime" : {
+          "type" : "string",
+          "description" : "HH:mm"
         },
         "price" : {
           "type" : "string"
@@ -202,9 +221,29 @@
         "price" : {
           "type" : "string"
         },
+        "fop" : {
+          "$ref" : "#/definitions/FormOfPayment"
+        },
         "sourceType" : {
           "type" : "string",
           "description" : "test (for canned response), facebook, linkedin, etc"
+        }
+      }
+    },
+    "FormOfPayment" : {
+      "type" : "object",
+      "properties" : {
+        "ccNumber" : {
+          "type" : "string"
+        },
+        "ccName" : {
+          "type" : "string"
+        },
+        "ccExpDate" : {
+          "type" : "string"
+        },
+        "ccCSV" : {
+          "type" : "string"
         }
       }
     },

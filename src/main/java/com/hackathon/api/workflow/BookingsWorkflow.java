@@ -1,9 +1,6 @@
 package com.hackathon.api.workflow;
 
-import com.hackathon.model.BookingConfirmation;
-import com.hackathon.model.BookingOffer;
-import com.hackathon.model.BookingPurchaseRequest;
-import com.hackathon.model.BookingSearchRequest;
+import com.hackathon.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,15 +12,15 @@ import java.util.List;
 @Component
 public class BookingsWorkflow {
 
-    public List<BookingOffer> getBookings(BookingSearchRequest bookingRequest){
-        List<BookingOffer> bookings = new ArrayList<>();
+    public BookingOfferResponse getBookings(BookingSearchRequest bookingRequest){
+        BookingOfferResponse bookingOfferResponse = new BookingOfferResponse();
 
         //allows for defaults for UI development
         if ("TEST".equalsIgnoreCase(bookingRequest.getSourceType())){
-            bookings.add(getCannedBookingOffer());
+            bookingOfferResponse.addBookingOffersItem(getCannedBookingOffer());
         }
 
-        return bookings;
+        return bookingOfferResponse;
     }
 
     public BookingConfirmation purchase(BookingPurchaseRequest bookingPurchaseRequest){
@@ -43,7 +40,8 @@ public class BookingsWorkflow {
         bookingOffer.setDepartureTime("02:17pm");
         bookingOffer.setOriginAirport("ATL");
         bookingOffer.setDestinationAirport("MYR");
-        bookingOffer.setFlightNumber("0045");
+        bookingOffer.setReturnDate("May 1, 2019");
+        bookingOffer.setReturnTime("02:28pm");
         bookingOffer.setOfferId("offer_id_12345");
         bookingOffer.setPrice("240.50");
         return bookingOffer;
