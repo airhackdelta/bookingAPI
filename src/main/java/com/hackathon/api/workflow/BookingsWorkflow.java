@@ -1,10 +1,10 @@
 package com.hackathon.api.workflow;
 
+import com.hackathon.api.mappers.OrderAPIMapper;
 import com.hackathon.model.*;
+import com.hackathon.ndc.order.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by 424047 on 4/5/2019.
@@ -12,12 +12,22 @@ import java.util.List;
 @Component
 public class BookingsWorkflow {
 
+    @Autowired
+    OrderAPIMapper orderAPIMapper;
+
     public BookingOfferResponse getBookings(BookingSearchRequest bookingRequest){
         BookingOfferResponse bookingOfferResponse = new BookingOfferResponse();
 
         //allows for defaults for UI development
         if ("TEST".equalsIgnoreCase(bookingRequest.getSourceType())){
             bookingOfferResponse.addBookingOffersItem(getCannedBookingOffer());
+        } else {
+            AirShoppingRQ request = orderAPIMapper.getRequest(bookingRequest);
+
+            //make the call
+            AirShoppingRS response = new AirShoppingRS();
+
+            bookingOfferResponse = orderAPIMapper.getResponse(response);
         }
 
         return bookingOfferResponse;

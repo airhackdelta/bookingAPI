@@ -2,7 +2,6 @@ package com.hackathon.api.controller;
 
 import com.hackathon.api.SearchApi;
 import com.hackathon.api.workflow.BookingsWorkflow;
-import com.hackathon.model.BookingOffer;
 import com.hackathon.model.BookingOfferResponse;
 import com.hackathon.model.BookingSearchRequest;
 import io.swagger.annotations.ApiParam;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * Created by 424047 on 4/5/2019.

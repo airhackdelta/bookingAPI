@@ -61,6 +61,33 @@ task swaggergen {
     }
 }
 
+task swaggergen_OrderAPI {
+
+    def orderAPISwaggerInput = file('contract/ndc_offer_swagger_v1.2.yaml')
+    def orderAPISwaggerOutputDir = file('build/swagger')
+    doLast {
+        def config = new CodegenConfigurator()
+
+        config.setInputSpec(orderAPISwaggerInput.path)
+        config.setOutputDir(orderAPISwaggerOutputDir.path)
+        config.setLang('spring')
+
+        config.setAdditionalProperties([
+                'modelPackage'  : 'com.hackathon.ndc.order.model',
+                'invokerPackage': 'com.hackathon'
+        ])
+
+        config.setSystemProperties([
+                'apis' : 'false',
+                'models' : '',
+                'modelTests' : 'false',
+                'modelDocs' : 'false'
+        ])
+
+        new DefaultGenerator().opts(config.toClientOptInput()).generate()
+    }
+}
+
 sourceSets {
     main.java.srcDirs = [
             "src/main/java",
@@ -68,7 +95,7 @@ sourceSets {
     ]
 }
 
-compileJava.dependsOn('swaggergen')
+compileJava.dependsOn('swaggergen', 'swaggergen_OrderAPI')
 
 ext {
     spring_boot_version = '1.5.6.RELEASE'
