@@ -1,0 +1,220 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is a Booking server.",
+    "version" : "1.0.0",
+    "title" : "Booking swagger"
+  },
+  "host" : "localhost",
+  "basePath" : "/bookings/v1",
+  "schemes" : [ "https", "http" ],
+  "paths" : {
+    "/search" : {
+      "post" : {
+        "summary" : "Return bookings based on lat/log to id (defined by sourceType)",
+        "operationId" : "searchByPost",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "BookingSearchRequest",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/BookingSearchRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "bookings",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/BookingOffer"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "500" : {
+            "description" : "Backend error"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Finds Bookings by status",
+        "description" : "Return bookings based on lat/log to id (defined by sourceType)",
+        "operationId" : "searchByGet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "originLat",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "degrees -- ie. 38.89864"
+        }, {
+          "name" : "originLong",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "degrees -- ie. 38.89864"
+        }, {
+          "name" : "destinationId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "id of destination contact -- based on sourceType"
+        }, {
+          "name" : "departureDate",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "MMddyyyy"
+        }, {
+          "name" : "returnDate",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "MMddyyyy"
+        }, {
+          "name" : "sourceType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "description" : "test (for canned response), facebook, linkedin, etc"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/BookingOffer"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request"
+          },
+          "500" : {
+            "description" : "Backend error"
+          }
+        }
+      }
+    },
+    "/purchase" : {
+      "post" : {
+        "summary" : "Purchase an offer",
+        "operationId" : "purchaseByPost",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "BookingPurchaseRequest",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/BookingPurchaseRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "confirmation",
+            "schema" : {
+              "$ref" : "#/definitions/BookingConfirmation"
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "500" : {
+            "description" : "Backend error"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "BookingSearchRequest" : {
+      "type" : "object",
+      "properties" : {
+        "originLat" : {
+          "type" : "string",
+          "description" : "degrees -- ie. 38.89864"
+        },
+        "originLong" : {
+          "type" : "string",
+          "description" : "degrees -- ie. 38.89864"
+        },
+        "destinationId" : {
+          "type" : "string",
+          "description" : "id of destination contact -- based on sourceType"
+        },
+        "departureDate" : {
+          "type" : "string",
+          "description" : "MMddyyyy"
+        },
+        "returnDate" : {
+          "type": "string",
+          "description" : "MMddyyyy"
+        },
+        "sourceType" : {
+          "type" : "string",
+          "description" : "test (for canned response), facebook, linkedin, etc"
+        }
+      }
+    },
+    "BookingOffer" : {
+      "type" : "object",
+      "properties" : {
+        "originAirport" : {
+          "type" : "string"
+        },
+        "destinationAirport" : {
+          "type" : "string"
+        },
+        "departureDate" : {
+          "type" : "string",
+          "description" : "MMddyyyy"
+        },
+        "departureTime" : {
+          "type" : "string",
+          "description" : "HH:mm"
+        },
+        "flightNumber" : {
+          "type" : "string"
+        },
+        "price" : {
+          "type" : "string"
+        },
+        "offerId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "BookingPurchaseRequest" : {
+      "type" : "object",
+      "properties" : {
+        "offerId" : {
+          "type" : "string"
+        },
+        "price" : {
+          "type" : "string"
+        },
+        "sourceType" : {
+          "type" : "string",
+          "description" : "test (for canned response), facebook, linkedin, etc"
+        }
+      }
+    },
+    "BookingConfirmation" : {
+      "type" : "object",
+      "properties" : {
+        "orderId" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
