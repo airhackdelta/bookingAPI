@@ -31,6 +31,7 @@ public class OrderAPIMapper {
         request.getRequest().getFlightRequest().getOriginDestRequest().get(0).setDestArrivalRequest(new DestArrivalRequestType());
         request.getRequest().getFlightRequest().getOriginDestRequest().get(0).getDestArrivalRequest().setIatalocationCode("MYR"); //TODO: get from nearest airport
         request.getRequest().getFlightRequest().getOriginDestRequest().get(0).getDestArrivalRequest().setDate(DateUtils.getDate(bookingSearchRequest.getDepartureDate()));
+        request.getRequest().getFlightRequest().getOriginDestRequest().get(0).setOriginDepRequest(new OriginDepRequestType());
         request.getRequest().getFlightRequest().getOriginDestRequest().get(0).getOriginDepRequest().setIatalocationCode("ATL"); //TODO: get from nearest airport
         request.getRequest().getFlightRequest().getOriginDestRequest().get(0).getDestArrivalRequest().setDate(DateUtils.getDate(bookingSearchRequest.getDepartureDate()));
 
