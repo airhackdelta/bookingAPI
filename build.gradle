@@ -97,6 +97,12 @@ sourceSets {
 
 compileJava.dependsOn('swaggergen', 'swaggergen_OrderAPI')
 
+tasks.withType(JavaExec) {
+    if (System.getProperty("DEBUG", 'false') == 'true') {
+        jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006'
+    }
+}
+
 ext {
     spring_boot_version = '1.5.6.RELEASE'
     jackson_version = '2.9.0'
@@ -120,6 +126,7 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-core:$jackson_version"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.5"
     compile "joda-time:joda-time:$jodatime_version"
     compile 'io.swagger:swagger-codegen:2.2.3'
