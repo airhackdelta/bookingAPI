@@ -9,6 +9,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 
@@ -112,8 +114,11 @@ public class OrderAPIMapper {
                 "\t</Request>\n" +
                 "</AirShoppingRQ>";
 
-        xml = xml.replace("REPLACE_DESTINATION", "MYR"); //TODO: replace with nearest airport
-        xml = xml.replace("REPLACE_ORIGIN", getAirportByCoordinates(bookingSearchRequest.getOriginLat(), bookingSearchRequest.getOriginLong()));
+        String destinationAirport = getAirpotByAddress(bookingSearchRequest.getDestinationId());
+        xml = xml.replace("REPLACE_DESTINATION", destinationAirport);
+        String originAirport = getAirportByCoordinates(bookingSearchRequest.getOriginLat(), bookingSearchRequest.getOriginLong());
+        System.out.println(originAirport);
+        xml = xml.replace("REPLACE_ORIGIN", originAirport);
         xml = xml.replace("REPLACE_DEPARTURE_DATE", bookingSearchRequest.getDepartureDate());
         return xml;
     }
@@ -122,12 +127,12 @@ public class OrderAPIMapper {
 
         BookingOfferResponse bookingOfferResponse = new BookingOfferResponse();
 
-        InputSource inputXML = new InputSource( new StringReader( xmlResponse ) );
+        InputSource inputXML = new InputSource( new StringReader( xmlResponse.replaceAll("xmlns=", "xmlns:not-used=") ) );
 
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {
-            String offerId = xPath.evaluate("/AirShoppingRS/OffersGroup/CarrierOffers/Offer[1]/OfferID", inputXML);
+            String offerId = xPath.evaluate("/AirShoppingRS/Response/OffersGroup/CarrierOffers/Offer[1]/OfferID", inputXML);
             System.out.println(offerId);
         } catch (Exception e){
             e.printStackTrace();
@@ -153,6 +158,44 @@ public class OrderAPIMapper {
                 Matcher matcher = p.matcher(responseString);
                 if(matcher.find())
                     return matcher.group(1);
+            }
+
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    private String getAirpotByAddress(String address) {
+
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+
+        try {
+            address=address.replaceAll(" ", "+");
+            HttpGet getRequest = new HttpGet("https://maps.googleapis.com/maps/api/geocode/json?address="+address+"&key=AIzaSyADktCH4LN8oCUDekSpPFZ_EQlKgA2fy0w");
+            getRequest.addHeader("Content-type", "application/xml");
+            getRequest.addHeader("Accept", "");
+
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity responseEntity = response.getEntity();
+            if(responseEntity!=null) {
+                String responseString = EntityUtils.toString(responseEntity);
+                System.out.println(responseString);
+
+                JSONObject jsonObject = new JSONObject(responseString);
+                JSONArray arry=jsonObject.getJSONArray("results");
+                JSONObject obj=(JSONObject)arry.get(0);
+
+                JSONObject loc=obj.getJSONObject("geometry").getJSONObject("location");
+                String lat=String.valueOf(loc.getFloat("lat"));
+                String lng=String.valueOf(loc.getFloat("lng"));
+
+                System.out.println(lat+" "+lng);
+                return getAirportByCoordinates(lat, lng);
+
             }
 
         }
