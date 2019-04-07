@@ -84,7 +84,7 @@ public class BookingsWorkflow {
             HttpPost postRequest = new HttpPost("https://stage-apigateway.delta.com/NDC/v18.1/AirShopping");
             //postRequest.addHeader("Content-type", "application/xml");
             //postRequest.addHeader("Accept", "");
-            postRequest.addHeader("Authorization", "Bearer WpaYasAvJflSZlahNGrF8ozf6AlR");
+            postRequest.addHeader("Authorization", "Bearer eVqqc2AjpqR6CMq7CTfATPqIitQG");
 
             StringEntity userEntity = new StringEntity(xmlRequest);
             postRequest.setEntity(userEntity);

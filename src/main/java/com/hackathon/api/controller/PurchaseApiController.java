@@ -219,7 +219,7 @@ public class PurchaseApiController implements PurchaseApi {
             HttpPost postRequest = new HttpPost("https://stage-apigateway.delta.com/NDC/v18.1/OrderCreate");
             postRequest.addHeader("Content-type", "application/xml");
             postRequest.addHeader("Accept", "");
-            postRequest.addHeader("Authorization", "Bearer WpaYasAvJflSZlahNGrF8ozf6AlR");
+            postRequest.addHeader("Authorization", "Bearer eVqqc2AjpqR6CMq7CTfATPqIitQG");
 
             StringEntity userEntity = new StringEntity(request_XML);
             postRequest.setEntity(userEntity);
