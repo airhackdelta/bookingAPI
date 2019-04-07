@@ -146,6 +146,8 @@ public class OrderAPIMapper {
                 String offerID = (String) xPath.compile("//Offer[" + (i+1) + "]/OfferID").evaluate(xmlDocument, XPathConstants.STRING);
                 String price = (String) xPath.compile("//Offer[" + (i+1) + "]/OfferItem/Price/TotalAmount").evaluate(xmlDocument, XPathConstants.STRING);
                 String paxSegmentRefID = (String) xPath.compile("//Offer[" + (i+1) +"]/OfferItem/Service/ServiceAssociations/ServiceDefinitionRef/PaxSegmentRefID").evaluate(xmlDocument, XPathConstants.STRING);
+
+                String flightNumber = (String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/MarketingCarrierInfo/MarketingCarrierFlightNumberText").evaluate(xmlDocument, XPathConstants.STRING);;
                 String departureAirport = (String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Dep/IATA_LocationCode").evaluate(xmlDocument, XPathConstants.STRING);
                 String destinationAirport = (String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Arrival/IATA_LocationCode").evaluate(xmlDocument, XPathConstants.STRING);
 
@@ -162,6 +164,7 @@ public class OrderAPIMapper {
                 bookingOffer.setDestinationAirport(destinationAirport);
                 bookingOffer.setDepartureDate(departureDate);
                 bookingOffer.setOfferId(offerID);
+                bookingOffer.setFlightNumber(flightNumber);
                 bookingOffer.setPrice(price);
 
                 bookingOfferResponse.addBookingOffersItem(bookingOffer);

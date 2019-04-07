@@ -185,6 +185,9 @@
         "originAirport" : {
           "type" : "string"
         },
+        "flightNumber" : {
+          "type" : "string"
+        },
         "destinationAirport" : {
           "type" : "string"
         },
