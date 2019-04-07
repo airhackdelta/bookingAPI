@@ -1,6 +1,7 @@
 package com.hackathon.api.mappers;
 
 import com.hackathon.api.utils.DateUtils;
+import com.hackathon.model.BookingOffer;
 import com.hackathon.model.BookingOfferResponse;
 import com.hackathon.model.BookingSearchRequest;
 import com.hackathon.ndc.order.model.*;
@@ -12,10 +13,17 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
@@ -115,25 +123,75 @@ public class OrderAPIMapper {
                 "</AirShoppingRQ>";
 
         String destinationAirport = getAirpotByAddress(bookingSearchRequest.getDestinationId());
+        System.out.println(destinationAirport);
         xml = xml.replace("REPLACE_DESTINATION", destinationAirport);
+
         String originAirport = getAirportByCoordinates(bookingSearchRequest.getOriginLat(), bookingSearchRequest.getOriginLong());
         System.out.println(originAirport);
         xml = xml.replace("REPLACE_ORIGIN", originAirport);
+
         xml = xml.replace("REPLACE_DEPARTURE_DATE", bookingSearchRequest.getDepartureDate());
         return xml;
     }
 
     public BookingOfferResponse getXMLResponse(String xmlResponse){
+        BookingOfferResponse bookingOfferResponse = new BookingOfferResponse();
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(xmlResponse.getBytes());
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document xmlDocument = builder.parse(bais);
+            XPath xPath = XPathFactory.newInstance().newXPath();
+            for (int i=0; i<3; i++) {
+                String offerID = (String) xPath.compile("//Offer[" + (i+1) + "]/OfferID").evaluate(xmlDocument, XPathConstants.STRING);
+                String price = (String) xPath.compile("//Offer[" + (i+1) + "]/OfferItem/Price/TotalAmount").evaluate(xmlDocument, XPathConstants.STRING);
+                String paxSegmentRefID = (String) xPath.compile("//Offer[" + (i+1) +"]/OfferItem/Service/ServiceAssociations/ServiceDefinitionRef/PaxSegmentRefID").evaluate(xmlDocument, XPathConstants.STRING);
+                String departureAirport = (String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Dep/IATA_LocationCode").evaluate(xmlDocument, XPathConstants.STRING);
+                String destinationAirport = (String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Arrival/IATA_LocationCode").evaluate(xmlDocument, XPathConstants.STRING);
+
+                String departureDateTime = ((String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Dep/AircraftScheduledDateTime").evaluate(xmlDocument, XPathConstants.STRING));
+                String arrivalDateTime = ((String) xPath.compile("//PaxSegmentList/PaxSegment[PaxSegmentID/text()='" + paxSegmentRefID + "']/Arrival/AircraftScheduledDateTime").evaluate(xmlDocument, XPathConstants.STRING));
+
+                String departureDate = "";
+                if (departureDateTime != null && departureDateTime.length() > 10){
+                    departureDate = departureDateTime.substring(0, 10);
+                }
+
+                BookingOffer bookingOffer = new BookingOffer();
+                bookingOffer.setOriginAirport(departureAirport);
+                bookingOffer.setDestinationAirport(destinationAirport);
+                bookingOffer.setDepartureDate(departureDate);
+                bookingOffer.setOfferId(offerID);
+                bookingOffer.setPrice(price);
+
+                bookingOfferResponse.addBookingOffersItem(bookingOffer);
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return bookingOfferResponse;
+    }
+
+    public BookingOfferResponse getXMLResponseBAK(String xmlResponse){
 
         BookingOfferResponse bookingOfferResponse = new BookingOfferResponse();
 
-        InputSource inputXML = new InputSource( new StringReader( xmlResponse.replaceAll("xmlns=", "xmlns:not-used=") ) );
+        InputSource inputXML = new InputSource( new StringReader( xmlResponse));//.replaceAll("xmlns=", "xmlns:not-used=") ) );
 
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {
-            String offerId = xPath.evaluate("/AirShoppingRS/Response/OffersGroup/CarrierOffers/Offer[1]/OfferID", inputXML);
-            System.out.println(offerId);
+            inputXML = new InputSource( new StringReader( xmlResponse));
+            String offerId0 = xPath.evaluate("/AirShoppingRS/Response/OffersGroup/CarrierOffers/Offer[1]/OfferID", inputXML);
+            inputXML = new InputSource( new StringReader( xmlResponse));
+            String offerId1 = xPath.evaluate("/AirShoppingRS/Response/OffersGroup/CarrierOffers/Offer[1]/OfferID/text()", inputXML);
+            inputXML = new InputSource( new StringReader( xmlResponse));
+            String offerId2 = xPath.evaluate("//Offer[1]/OfferID", inputXML);
+            inputXML = new InputSource( new StringReader( xmlResponse));
+            String offerId3 = xPath.evaluate("//Offer[1]/OfferID/text()", inputXML);
+
+            System.out.println(offerId0);
         } catch (Exception e){
             e.printStackTrace();
         }

@@ -19,6 +19,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 
 import javax.validation.Valid;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by 424047 on 4/5/2019.
@@ -227,13 +229,25 @@ public class PurchaseApiController implements PurchaseApi {
             if(responseEntity!=null) {
                 String responseString = EntityUtils.toString(responseEntity);
                 System.out.println(responseString);
+
+                BookingConfirmation bc = new BookingConfirmation();
+                //Pattern p = Pattern.compile("^<OrderID>([A-Z0-9]*)<$");
+                //Pattern p = Pattern.compile("(?<=<OrderID>)(.*)(?=</OrderID>)");
+                //Matcher m = p.matcher(responseString);
+
+                int index = responseString.indexOf("<OrderID>");
+                bc.setOrderId(responseString.substring(index+9, index+15));
+
+                //bc.setOrderId(m.group(1));
+                System.out.println(bc.getOrderId());
+
+                return new ResponseEntity(bc, HttpStatus.OK);
             }
 
         }
         catch(Exception e) {
             e.printStackTrace();
         }
-
-        return new ResponseEntity(bookingWorkflow.purchase(body), HttpStatus.OK);
+        return null;
     }
 }
